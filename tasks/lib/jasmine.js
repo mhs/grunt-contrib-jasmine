@@ -9,10 +9,13 @@ exports.init = function(grunt, phantomjs) {
   // npm
   var rimraf = require('rimraf');
 
-  var baseDir = '.',
-      tempDir = '.grunt/grunt-contrib-jasmine';
+  var tempDir = '.grunt/grunt-contrib-jasmine';
 
   var exports = {};
+
+  exports.setOptions = function(options) {
+    this.options = options;
+  }
 
   exports.writeTempFile = function(dest, contents) {
     var file = path.join(tempDir,dest);
@@ -69,7 +72,7 @@ exports.init = function(grunt, phantomjs) {
     };
 
     var source = '',
-      specrunner = path.join(baseDir,options.outfile);
+      specrunner = options.outfile;
 
     if (options.template.process) {
       var task = {
@@ -93,14 +96,14 @@ exports.init = function(grunt, phantomjs) {
 
   exports.getRelativeFileList = function (/* args... */) {
 
-    var list = Array.prototype.slice.call(arguments);
-    var base = path.resolve(baseDir);
+    var list = grunt.util._.flatten(Array.prototype.slice.call(arguments));
+    var base = path.resolve(this.options.baseDir) + '/';
     var files = [];
     list.forEach(function(listItem){
-      if (listItem) files = files.concat(grunt.file.expand({nonull: true},listItem));
+      if (listItem) files = files.concat(grunt.file.expand({nonull: true}, base + listItem));
     });
     files = grunt.util._(files).map(function(file){
-      return (/^https?:/).test(file) ? file : path.resolve(file).replace(base,'.').replace(/\\/g,'/');
+      return (/^https?:/).test(file) ? file : path.resolve(file).replace(base,'').replace(/\\/g,'/');
     });
     return files;
   };

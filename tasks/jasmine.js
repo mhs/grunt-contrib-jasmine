@@ -30,6 +30,7 @@ module.exports = function(grunt) {
       version : '1.3.1',
       timeout : 10000,
       styles  : [],
+      baseDir : '.',
       specs   : [],
       helpers : [],
       vendor  : [],
@@ -40,6 +41,7 @@ module.exports = function(grunt) {
       phantomjs : {},
       junit: {}
     });
+    options.outfile = path.join(options.baseDir, options.outfile);
 
     if (options.template === 'requirejs') {
       grunt.log.warn(
@@ -53,6 +55,8 @@ module.exports = function(grunt) {
     }
 
     setup(options);
+
+    jasmine.setOptions(options);
 
     jasmine.buildSpecrunner(this.filesSrc,options);
 
@@ -85,7 +89,7 @@ module.exports = function(grunt) {
 
     if (options.host) {
       if (!(/\/$/).test(options.host)) options.host = options.host + '/';
-      file = options.host + options.outfile;
+      file = options.host + path.basename(options.outfile);
     }
 
     grunt.verbose.subhead('Testing jasmine specs via phantom').or.writeln('Testing jasmine specs via phantom');
